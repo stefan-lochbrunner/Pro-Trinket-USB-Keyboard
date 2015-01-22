@@ -65,6 +65,7 @@ int usb_codes[modes][rows][cols][2] = {
     {{30,0},{31,0},{32,0},{33,0}},
     {{34,0},{35,0},{36,0},{37,0}},
     {{38,0},{39,0},{10,0},{21,0}}
+    // ^key     ^modifier
   },
   //multimedia
   {
@@ -173,7 +174,7 @@ void loop(){
           key_prev[j][i] = 0;
           
           //execute keystroke
-          UsbKeyboard.sendKeyStroke(usb_codes[mode][j][i][0]);
+          UsbKeyboard.sendKeyStroke(usb_codes[mode][j][i][0], usb_codes[mode][j][i][1]);
         }
         //key release
         else if(but == 1 && key_prev[j][i] == 0){
@@ -196,13 +197,13 @@ void loop(){
           //cw rotation ...orwhatever? 
           
           //execute keystroke
-          UsbKeyboard.sendKeyStroke(usb_codes_enc[mode][i][0][0]);
+          UsbKeyboard.sendKeyStroke(usb_codes_enc[mode][i][0][0], usb_codes_enc[mode][i][0][1]);
         }
         else if(B == 0){
           //ccw rotation ...orwhatever?
           
           //execute keystroke
-          UsbKeyboard.sendKeyStroke(usb_codes_enc[mode][i][1][0]);
+          UsbKeyboard.sendKeyStroke(usb_codes_enc[mode][i][1][0], usb_codes_enc[mode][i][1][1]);
         }
       }
       else if(A == 1 && B == 1){
