@@ -124,6 +124,8 @@ void setup(){
   //mode LEDs
   for(int i=0; i<leds; i++){
     pinMode(ledPins[i], OUTPUT);
+    digitalWrite(ledPins[i], HIGH);
+    delayMs(200);
     digitalWrite(ledPins[i], LOW);
   }
   digitalWrite(ledPins[mode], HIGH);
