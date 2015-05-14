@@ -229,6 +229,8 @@ void loop(){
 
       //disable col
       digitalWrite(colPins[i], HIGH);
+      
+      delayMicroseconds(250);    //software debounce
     }
     // /cycle through cols
   }
