@@ -11,16 +11,13 @@ Inteded for Adafruit Pro Trinket http://www.adafruit.com/product/2000
   PD7 / digital 7 is D-
   PB5 / digital 13 has LED
 Based on VUSB for Arduino https://code.google.com/p/vusb-for-arduino/
-  PD5 / digital 5 used for D- pull-up
 
 Notes:
 - Originally intended to be used with keypad library
   http://playground.arduino.cc/code/Keypad
   but was abandoned because of conflicts in the usage of TIMSK0.
-- Requires modificatonC:\Users\Steve\Downloads\Dropbox\Apps\arduino-1.0.5 of D- pull-up circuit to allow VUSB to disconnect and reconnect
-  to be recognized as HID keyboard instead on USBtiny device.
-  Manual switch added to select between pull-up to Vdd and connection to PD5 as outlined
-  in usbconfig.h.
+- Requires modificaton of  usbconfig.h.
+  Comment out "Optional Hardware Config" section
 - See https://learn.adafruit.com/trinket-usb-volume-knob
   for instructions on rotary encoders
   
