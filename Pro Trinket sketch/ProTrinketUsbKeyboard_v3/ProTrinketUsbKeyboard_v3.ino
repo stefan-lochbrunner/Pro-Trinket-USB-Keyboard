@@ -130,6 +130,7 @@ void setup(){
   delay(500);
   
   //USB
+  TIMSK0&=!(1<<TOIE0);
   TrinketHidCombo.begin();
   
   while(!TrinketHidCombo.isConnected()){
@@ -145,8 +146,8 @@ void loop(){
   
   //break criteria for while loop (to service USB)
   int count = 0;
-  //poll inputs 250us=>7; 100us=>18; no delay=>504
-  while(count < 504){
+  //poll inputs
+  while(count < 5){
     count ++;
     
     //poll mode button
@@ -230,8 +231,7 @@ void loop(){
       //disable col
       digitalWrite(colPins[i], HIGH);
       
-      //delayMicroseconds(250);    //software debounce
-      //delayMicroseconds(100);
+      delayMicroseconds(250);    //software debounce
     }
     // /cycle through cols
   }
