@@ -21,6 +21,7 @@ Notes:
   but changed to Adafruit ProTrinketHidCombo library https://github.com/adafruit/Pro-Trinket-Rotary-Encoder
   due to compatibility issues with Arduino 1.6.4. Also allows usage of multimedia keys.
   See https://learn.adafruit.com/pro-trinket-rotary-encoder for more information.
+  Requires change to the library as explained here: https://hackaday.io/project/3502-pro-trinket-usb-keyboard/log/18867-move-to-adafruits-protrinkethidcombo-lib
   
 */
 
