@@ -50,7 +50,7 @@ int enc_prev[cols] = {
 
 //misc UI definitions
 int const modes = 3;    //number of modes/different keysets
-int mode = 0;           //curent mode
+int mode = 1;           //curent mode
 //btn to toggle through modes
 int modeBtn = 3;
 int modeBtnPrev = 1;
@@ -70,15 +70,21 @@ int usb_codes[modes][rows][cols][6] = {
   },
   //multimedia
   {
-    {{0,226,0,0,0,0},{0,31,0,0,0,0},{0,32,0,0,0,0},{0,33,0,0,0,0}},
-    {{0,34,0,0,0,0},{0,35,0,0,0,0},{0,36,0,0,0,0},{0,37,0,0,0,0}},
-    {{0,38,0,0,0,0},{0,10,0,0,0,0},{0,39,0,0,0,0},{0,21,0,0,0,0}}
+    {{0,MMKEY_MUTE,0,0,0,0},{0,MMKEY_PLAYPAUSE,0,0,0,0},{1,KEYCODE_R,0,0,0,0},{0,0,0,0,0,0}},
+    //mute,playpause,ctrl+r,
+    {{8,KEYCODE_ARROW_LEFT,0,0,0,0},{3,KEYCODE_TAB,0,0,0,0},{1,KEYCODE_TAB,0,0,0,0},{8,KEYCODE_ARROW_RIGHT,0,0,0,0}},
+    //win+<,ctrl+shift+tab,ctrl+tab,win+>
+    {{8,0,0,0,0,0},{1,KEYCODE_C,0,0,0,0},{1,KEYCODE_V,0,0,0,0},{0,0,0,0,0,0}}
+    //win,ctrl+c,ctrl+v,
   },
   //eagle
   {
-    {{KEYCODE_MOD_LEFT_ALT,KEYCODE_F2,0,0,0,0},   {0,KEYCODE_F2,0,0,0,0},                      {0,KEYCODE_F6,0,0,0,0}, {5,KEYCODE_R,0,0,0,0}},
-    {{KEYCODE_MOD_LEFT_CONTROL,KEYCODE_M,0,0,0,0},{KEYCODE_MOD_LEFT_CONTROL,KEYCODE_G,0,0,0,0},{3,KEYCODE_A,0,0,0,0},  {KEYCODE_MOD_LEFT_CONTROL,KEYCODE_D,0,0,0,0}},
-    {{KEYCODE_MOD_LEFT_CONTROL,KEYCODE_R,0,0,0,0},{3,KEYCODE_R,0,0,0,0},       {3,KEYCODE_N,0,0,0,0},  {KEYCODE_MOD_LEFT_ALT,43,0,0,0,0}}
+    {{4,KEYCODE_F2,0,0,0,0},{0,KEYCODE_F2,0,0,0,0},{0,KEYCODE_F6,0,0,0,0},{1,KEYCODE_S,0,0,0,0}},
+    //view all,redraw,grid toggle,save
+    {{1,KEYCODE_M,0,0,0,0},{1,KEYCODE_G,0,0,0,0},{3,KEYCODE_A,0,0,0,0},{1,KEYCODE_D,0,0,0,0}},
+    //move,group,add,delete
+    {{1,KEYCODE_R,0,0,0,0},{3,KEYCODE_R,0,0,0,0},{3,KEYCODE_N,0,0,0,0},{0,KEYCODE_F5,0,0,0,0}}
+    //route,ripup,name,view to cursor
   }
 };
 //encoder actions. 1 enc per col, cw & ccw direction (2) plus optional modifier (2)
@@ -87,23 +93,23 @@ int usb_codes_enc[modes][cols][2][6] = {
   //dialpad
   {
     {{0,81,0,0,0,0},{0,82,0,0,0,0}},
-    {{0,30,0,0,0,0},{0,31,0,0,0,0}},
+    {{0,79,0,0,0,0},{0,80,0,0,0,0}},
     {{0,30,0,0,0,0},{0,31,0,0,0,0}},
     {{0,30,0,0,0,0},{0,31,0,0,0,0}}
   },
-  //multimedia
+  //multimedia encoders
   {
-    {{0,234,0,0,0,0},{0,233,0,0,0,0}},
-    {{0,81,0,0,0,0},{0,82,0,0,0,0}},
-    {{0,81,0,0,0,0},{0,82,0,0,0,0}},
-    {{0,81,0,0,0,0},{0,82,0,0,0,0}}
+    {{0,MMKEY_VOL_DOWN,0,0,0,0},{0,MMKEY_VOL_UP,0,0,0,0}},    //volume down, up
+    {{0,MMKEY_SCAN_PREV_TRACK,0,0,0,0},{0,MMKEY_SCAN_NEXT_TRACK,0,0,0,0}},      //prev, next track
+    {{1,KEYCODE_Y,0,0,0,0},{1,KEYCODE_Z,0,0,0,0}},      //undo, redo
+    {{0,KEYCODE_ARROW_DOWN,0,0,0,0},{0,KEYCODE_ARROW_UP,0,0,0,0}}   //scroll down, up (arrow keys)
   },
   //eagle
   {
-    {{0,KEYCODE_F3,0,0,0,0},                      {0,KEYCODE_F4,0,0,0,0}},
-    {{0,KEYCODE_MOD_LEFT_CONTROL,KEYCODE_Y,0,0,0},{0,KEYCODE_MOD_LEFT_CONTROL,KEYCODE_Z,0,0,0}},
-    {{0,81,0,0,0,0},                              {0,82,0,0,0,0}},
-    {{0,81,0,0,0,0},                              {0,82,0,0,0,0}}
+    {{0,KEYCODE_F4,0,0,0,0},{0,KEYCODE_F3,0,0,0,0}},    //zoom
+    {{4,KEYCODE_2,0,0,0,0},{4,KEYCODE_1,0,0,0,0}},      //switch sch & brd
+    {{3,KEYCODE_U,0,0,0,0},{1,KEYCODE_U,0,0,0,0}},    //ratsnest, ripup @;
+    {{1,KEYCODE_Y,0,0,0,0},{1,KEYCODE_Z,0,0,0,0}}    //undo,redo
   }
 };
 
@@ -138,8 +144,8 @@ void setup(){
   while(!TrinketHidCombo.isConnected()){
     TrinketHidCombo.poll();
   }
-
-  digitalWrite(ledPins[mode], HIGH);
+  //turn on LED once USB connection is up
+  analogWrite(ledPins[mode], 64);
 }
 
 void loop(){
@@ -160,8 +166,10 @@ void loop(){
     for(int i=0; i<leds; i++){
       digitalWrite(ledPins[i], LOW);
     }
-    //turn on current LED
-    digitalWrite(ledPins[mode], HIGH);
+    //turn on current LED if USB is still connected. prevents LEDs being on if PC isn't
+    if(TrinketHidCombo.isConnected()){
+      analogWrite(ledPins[mode], 64);
+    }
   }
   else if (digitalRead(modeBtn) == 1 && modeBtnPrev == 0){
     modeBtnPrev = 1;
@@ -245,11 +253,11 @@ void loop(){
 
 //differentiate between keycode and multimedia keycode
 void executeKeystroke(int* keycombo){
-  if(keycombo[1] < 110){
+  if(keycombo[1] < 110 || keycombo[1] == 224 || keycombo[1] == 225 || keycombo[1] == 227 || keycombo[1] == 228 || keycombo[1] == 230){
     TrinketHidCombo.pressKey(keycombo[0], keycombo[1]);
     TrinketHidCombo.pressKey(0, 0);      //release button(s)
   }
-  else if(keycombo[1] >= 110){
+  else if(keycombo[1] >= 110 && keycombo[1] < 235){
     TrinketHidCombo.pressMultimediaKey(keycombo[1]);
     TrinketHidCombo.pressMultimediaKey(0);      //release button(s)
   }
