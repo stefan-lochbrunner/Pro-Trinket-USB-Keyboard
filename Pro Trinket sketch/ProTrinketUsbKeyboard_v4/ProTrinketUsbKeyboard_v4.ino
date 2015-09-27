@@ -99,17 +99,17 @@ int usb_codes_enc[modes][cols][2][6] = {
   },
   //multimedia encoders
   {
-    {{0,MMKEY_VOL_DOWN,0,0,0,0},{0,MMKEY_VOL_UP,0,0,0,0}},    //volume down, up
+    {{0,MMKEY_VOL_DOWN,0,0,0,0},{0,MMKEY_VOL_UP,0,0,0,0}},          //volume down, up
     {{0,MMKEY_SCAN_PREV_TRACK,0,0,0,0},{0,MMKEY_SCAN_NEXT_TRACK,0,0,0,0}},      //prev, next track
-    {{1,KEYCODE_Y,0,0,0,0},{1,KEYCODE_Z,0,0,0,0}},      //undo, redo
+    {{1,KEYCODE_Y,0,0,0,0},{1,KEYCODE_Z,0,0,0,0}},                  //undo, redo
     {{0,KEYCODE_ARROW_DOWN,0,0,0,0},{0,KEYCODE_ARROW_UP,0,0,0,0}}   //scroll down, up (arrow keys)
   },
   //eagle
   {
     {{0,KEYCODE_F4,0,0,0,0},{0,KEYCODE_F3,0,0,0,0}},    //zoom
     {{4,KEYCODE_2,0,0,0,0},{4,KEYCODE_1,0,0,0,0}},      //switch sch & brd
-    {{3,KEYCODE_U,0,0,0,0},{1,KEYCODE_U,0,0,0,0}},    //ratsnest, ripup @;
-    {{1,KEYCODE_Y,0,0,0,0},{1,KEYCODE_Z,0,0,0,0}}    //undo,redo
+    {{3,KEYCODE_U,0,0,0,0},{1,KEYCODE_U,0,0,0,0}},      //ratsnest, ripup @;
+    {{1,KEYCODE_Y,0,0,0,0},{1,KEYCODE_Z,0,0,0,0}}       //undo,redo
   }
 };
 
@@ -192,10 +192,6 @@ void loop(){
 
         //execute keystroke
         executeKeystroke(usb_codes[mode][j][i]);
-        /*
-        TrinketHidCombo.pressKey(usb_codes[mode][j][i][0], usb_codes[mode][j][i][1]);
-        TrinketHidCombo.pressKey(0, 0);
-        */
       }
       //key release
       else if(but == 1 && key_prev[j][i] == 0){
@@ -215,26 +211,16 @@ void loop(){
 
       //determine rotation direction (cw/ccw)
       if(B == 1){
-        //cw rotation ...orwhatever?
+        //ccw rotation
 
         //execute keystroke
         executeKeystroke(usb_codes_enc[mode][i][0]);
-
-        /*
-        TrinketHidCombo.pressKey(usb_codes_enc[mode][i][0][0], usb_codes_enc[mode][i][0][1]);
-        TrinketHidCombo.pressKey(0, 0);
-        */
       }
       else if(B == 0){
-        //ccw rotation ...orwhatever?
+        //cw rotation
 
         //execute keystroke
         executeKeystroke(usb_codes_enc[mode][i][1]);
-
-        /*
-        TrinketHidCombo.pressKey(usb_codes_enc[mode][i][1][0], usb_codes_enc[mode][i][1][1]);
-        TrinketHidCombo.pressKey(0, 0);
-        */
       }
     }
     else if(A == 1 && B == 1){
@@ -253,7 +239,7 @@ void loop(){
 
 //differentiate between keycode and multimedia keycode
 void executeKeystroke(int* keycombo){
-  if(keycombo[1] < 110 || keycombo[1] == 224 || keycombo[1] == 225 || keycombo[1] == 227 || keycombo[1] == 228 || keycombo[1] == 230){
+  if(keycombo[1] < 110){    // || keycombo[1] == 224 || keycombo[1] == 225 || keycombo[1] == 227 || keycombo[1] == 228 || keycombo[1] == 230){
     TrinketHidCombo.pressKey(keycombo[0], keycombo[1]);
     TrinketHidCombo.pressKey(0, 0);      //release button(s)
   }
