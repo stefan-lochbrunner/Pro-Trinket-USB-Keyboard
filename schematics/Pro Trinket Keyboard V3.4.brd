@@ -146,7 +146,7 @@
 <hole x="40.005" y="40.005" drill="3.2"/>
 <hole x="4.1275" y="40.005" drill="3.2"/>
 <hole x="75.8825" y="40.005" drill="3.2"/>
-<text x="50.165" y="0.9525" size="1.778" layer="26" rot="MR0">hackaday.io/project/3502 v3.3 03/2015</text>
+<text x="50.165" y="0.9525" size="1.778" layer="26" rot="MR0">hackaday.io/project/3502 v3.4 10/2015</text>
 </plain>
 <libraries>
 <library name="SparkFun-Electromechanical">
