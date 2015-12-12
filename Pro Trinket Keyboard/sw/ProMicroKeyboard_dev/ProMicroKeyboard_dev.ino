@@ -25,6 +25,7 @@ Notes:
   See https://learn.adafruit.com/pro-trinket-rotary-encoder for more information.
 - Limitations:
     # To easily distinguish between 'normal' keys and multimedia keys, KEYCODE_*_CONTROL/SHIFT/ALT/GUI can't be used. Keycodes below 110 (chosen arbitrarily) will be interpreted as 'normal' keys and keycodes above will be interpreted as multimedia keys. In the future, kecodes larger than 234 might be used control mouse.
+- Arduino native Keyboard library anly allows for a single modifier which can be solved by adding additional key presses
 */
 
 
@@ -85,20 +86,20 @@ int usb_codes[modes][rows][cols][6] = {
   },
   //multimedia
   {
-    {{0,MMKEY_MUTE,0,0,0,0},{0,MMKEY_PLAYPAUSE,0,0,0,0},{1,KEYCODE_R,0,0,0,0},{0,0,0,0,0,0}},
+    {{0,MMKEY_MUTE,0,0,0,0},{0,MMKEY_PLAYPAUSE,0,0,0,0},{KEYCODE_MOD_LEFT_CONTROL,KEYCODE_R,0,0,0,0},{0,0,0,0,0,0}},
     //mute,playpause,ctrl+r,
-    {{8,KEYCODE_ARROW_LEFT,0,0,0,0},{3,KEYCODE_TAB,0,0,0,0},{1,KEYCODE_TAB,0,0,0,0},{8,KEYCODE_ARROW_RIGHT,0,0,0,0}},
+    {{8,KEYCODE_ARROW_LEFT,0,0,0,0},{3,KEYCODE_TAB,0,0,0,0},{KEYCODE_MOD_LEFT_CONTROL,KEYCODE_TAB,0,0,0,0},{8,KEYCODE_ARROW_RIGHT,0,0,0,0}},
     //win+<,ctrl+shift+tab,ctrl+tab,win+>
-    {{8,0,0,0,0,0},{1,KEYCODE_C,0,0,0,0},{1,KEYCODE_V,0,0,0,0},{0,0,0,0,0,0}}
+    {{8,0,0,0,0,0},{KEYCODE_MOD_LEFT_CONTROL,KEYCODE_C,0,0,0,0},{KEYCODE_MOD_LEFT_CONTROL,KEYCODE_V,0,0,0,0},{0,0,0,0,0,0}}
     //win,ctrl+c,ctrl+v,
   },
   //eagle
   {
-    {{4,KEYCODE_F2,0,0,0,0},{0,KEYCODE_F2,0,0,0,0},{0,KEYCODE_F6,0,0,0,0},{1,KEYCODE_S,0,0,0,0}},
+    {{KEYCODE_MOD_LEFT_ALT,KEYCODE_F2,0,0,0,0},{0,KEYCODE_F2,0,0,0,0},{0,KEYCODE_F6,0,0,0,0},{KEYCODE_MOD_LEFT_CONTROL,KEYCODE_S,0,0,0,0}},
     //view all,redraw,grid toggle,save
-    {{1,KEYCODE_M,0,0,0,0},{1,KEYCODE_G,0,0,0,0},{3,KEYCODE_A,0,0,0,0},{1,KEYCODE_D,0,0,0,0}},
+    {{KEYCODE_MOD_LEFT_CONTROL,KEYCODE_M,0,0,0,0},{KEYCODE_MOD_LEFT_CONTROL,KEYCODE_G,0,0,0,0},{3,KEYCODE_A,0,0,0,0},{KEYCODE_MOD_LEFT_CONTROL,KEYCODE_D,0,0,0,0}},
     //move,group,add,delete
-    {{1,KEYCODE_R,0,0,0,0},{3,KEYCODE_R,0,0,0,0},{3,KEYCODE_N,0,0,0,0},{0,KEYCODE_F5,0,0,0,0}}
+    {{KEYCODE_MOD_LEFT_CONTROL,KEYCODE_R,0,0,0,0},{3,KEYCODE_R,0,0,0,0},{3,KEYCODE_N,0,0,0,0},{0,KEYCODE_F5,0,0,0,0}}
     //route,ripup,name,view to cursor
   }
 };
@@ -159,20 +160,29 @@ void setup(){
   strip.show();
 
   //USB
-  //TIMSK0&=!(1<<TOIE0);
-  Keyboard.begin();
-  
+  #ifdef ProMicro
+    Keyboard.begin();
+  #endif
+  #ifdef ProTrinket
+    TIMSK0&=!(1<<TOIE0);
+    TrinketHidCombo.begin();
+  #endif
+
   //while(!TrinketHidCombo.isConnected()){
     //TrinketHidCombo.poll();
   //turn on LED once USB connection is up
   //analogWrite(ledPins[mode], 64);
-  strip.setPixelColor(0, strip.Color(modeColor[mode][0], modeColor[mode][1], modeColor[mode][2]));
+  for(int i=0; i<ledCount; i++){
+    strip.setPixelColor(i, strip.Color(modeColor[mode][0], modeColor[mode][1], modeColor[mode][2]));
+  }
   strip.show();
 }
 
 void loop(){
   //poll USB
-  //TrinketHidCombo.poll();
+  #ifdef ProTrinket
+    TrinketHidCombo.poll();
+  #endif
 
   //poll inputs
 
@@ -193,7 +203,9 @@ void loop(){
     //if(TrinketHidCombo.isConnected()){
       analogWrite(ledPins[mode], 64);
     */
-    strip.setPixelColor(0, strip.Color(modeColor[mode][0], modeColor[mode][1], modeColor[mode][2]));
+    for(int i=0; i<cols; i++){
+      strip.setPixelColor(i, strip.Color(modeColor[mode][0], modeColor[mode][1], modeColor[mode][2]));
+    }
     strip.show();
   }
   else if (digitalRead(modeBtn) == 1 && modeBtnPrev == 0){
