@@ -27,23 +27,21 @@ Notes:
     # To easily distinguish between 'normal' keys and multimedia keys, KEYCODE_*_CONTROL/SHIFT/ALT/GUI can't be used. Keycodes below 110 (chosen arbitrarily) will be interpreted as 'normal' keys and keycodes above will be interpreted as multimedia keys. In the future, kecodes larger than 234 might be used control mouse.
 */
 
-//setup USB
-#include <Keyboard.h>
-//setup WS2812B lib
-#include <Adafruit_NeoPixel.h>
-//include keycodes
-#include "keycodesPM.h"
-/*temp****************
-//better do something like this:
-define ProMicro or define ProTrinket
+
+//include keycodes and USB HID lib
+#define ProMicro //or define ProTrinket
 #ifdef ProMicro
+  #include <Keyboard.h>
   #include "keycodesPM.h"
 #endif
 #ifdef ProTrinket
+  #include <ProTrinketHidCombo.h>
   #include "keycodesPT.h"
 #endif
-*/
 //do the same for pin config
+//setup WS2812B lib
+#include <Adafruit_NeoPixel.h>
+
 
 //keypad & encoder definitions
 int colPins[] = { 4, 19, 15, 14};  //select pins, driven LOW to select col => btn active LOW
@@ -109,24 +107,24 @@ int usb_codes[modes][rows][cols][6] = {
 int usb_codes_enc[modes][cols][2][6] = {
   //dialpad
   {
-    {{0,81,0,0,0,0},{0,82,0,0,0,0}},
-    {{0,79,0,0,0,0},{0,80,0,0,0,0}},
-    {{0,30,0,0,0,0},{0,31,0,0,0,0}},
-    {{0,30,0,0,0,0},{0,31,0,0,0,0}}
+    {{0,KEYCODE_ARROW_DOWN,0,0,0,0},{0,KEYCODE_ARROW_UP,0,0,0,0}},
+    {{0,KEYCODE_ARROW_RIGHT,0,0,0,0},{0,KEYCODE_ARROW_LEFT,0,0,0,0}},
+    {{0,KEYCODE_1,0,0,0,0},{0,KEYCODE_2,0,0,0,0}},
+    {{0,KEYCODE_1,0,0,0,0},{0,KEYCODE_2,0,0,0,0}}
   },
   //multimedia encoders
   {
     {{0,MMKEY_VOL_DOWN,0,0,0,0},{0,MMKEY_VOL_UP,0,0,0,0}},          //volume down, up
     {{0,MMKEY_SCAN_PREV_TRACK,0,0,0,0},{0,MMKEY_SCAN_NEXT_TRACK,0,0,0,0}},      //prev, next track
-    {{1,KEYCODE_Y,0,0,0,0},{1,KEYCODE_Z,0,0,0,0}},                  //undo, redo
+    {{KEYCODE_MOD_LEFT_CONTROL,KEYCODE_Y,0,0,0,0},{KEYCODE_MOD_LEFT_CONTROL,KEYCODE_Z,0,0,0,0}},                  //undo, redo
     {{0,KEYCODE_ARROW_DOWN,0,0,0,0},{0,KEYCODE_ARROW_UP,0,0,0,0}}   //scroll down, up (arrow keys)
   },
   //eagle
   {
     {{0,KEYCODE_F4,0,0,0,0},{0,KEYCODE_F3,0,0,0,0}},    //zoom
-    {{4,KEYCODE_2,0,0,0,0},{4,KEYCODE_1,0,0,0,0}},      //switch sch & brd
-    {{3,KEYCODE_U,0,0,0,0},{1,KEYCODE_U,0,0,0,0}},      //ratsnest, ripup @;
-    {{1,KEYCODE_Y,0,0,0,0},{1,KEYCODE_Z,0,0,0,0}}       //undo,redo
+    {{KEYCODE_MOD_LEFT_ALT,KEYCODE_2,0,0,0,0},{KEYCODE_MOD_LEFT_ALT,KEYCODE_1,0,0,0,0}},      //switch sch & brd
+    {{3,KEYCODE_U,0,0,0,0},{KEYCODE_MOD_LEFT_CONTROL,KEYCODE_U,0,0,0,0}},      //ratsnest, ripup @;
+    {{KEYCODE_MOD_LEFT_CONTROL,KEYCODE_Y,0,0,0,0},{KEYCODE_MOD_LEFT_CONTROL,KEYCODE_Z,0,0,0,0}}       //undo,redo
   }
 };
 
@@ -266,16 +264,30 @@ void loop(){
 
 //differentiate between keycode and multimedia keycode
 void executeKeystroke(int* keycombo){
-  Serial.println(keycombo[1]);
+  //Serial.println(keycombo[1]);
   if(keycombo[1] < 110){    // || keycombo[1] == 224 || keycombo[1] == 225 || keycombo[1] == 227 || keycombo[1] == 228 || keycombo[1] == 230){
     if(keycombo[0]){        //press modifier only if there is one
-      Keyboard.press(keycombo[0]);
+      #ifdef ProMicro
+        Keyboard.press(keycombo[0]);
+      #endif
     }
-    Keyboard.press(keycombo[1]);
-    Keyboard.releaseAll();      //release button(s)
+    #ifdef ProMicro
+      Keyboard.press(keycombo[1]);
+      Keyboard.releaseAll();      //release button(s)
+    #endif
+    #ifdef ProTrinket
+      TrinketHidCombo.pressKey(keycombo[0], keycombo[1]);
+      TrinketHidCombo.pressKey(0, 0);      //release button(s)
+    #endif
   }
   else if(keycombo[1] >= 110 && keycombo[1] < 235){
-    Keyboard.press(keycombo[1]);
-    Keyboard.releaseAll();      //release button(s)
+    #ifdef ProMicro
+      Keyboard.press(keycombo[1]);
+      Keyboard.releaseAll();      //release button(s)
+    #endif
+    #ifdef ProTrinket
+      TrinketHidCombo.pressMultimediaKey(keycombo[1]);
+      TrinketHidCombo.pressMultimediaKey(0);      //release button
+    #endif
   }
 }
